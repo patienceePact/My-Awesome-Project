@@ -1,0 +1,69 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Введите выражение: ")
+	input, _ := reader.ReadString('\n')
+	input = strings.TrimSpace(input)
+
+	parts := strings.Split(input, " ")
+
+	if len(parts) != 3 {
+		panic("Неверный формат ввода")
+	}
+
+	if !strings.HasPrefix(parts[0], "\"") || !strings.HasSuffix(parts[0], "\"") {
+		panic("Первый аргумент должен быть строкой")
+	}
+
+	s1 := strings.Trim(parts[0], "\"")
+	s2 := strings.Trim(parts[2], "\"")
+
+	if len(s1) > 10 {
+		panic("Строка слишком длинная")
+	}
+
+	var result string
+	switch parts[1] {
+	case "+":
+		result = s1 + s2
+	case "-":
+		result = strings.Replace(s1, s2, "", -1)
+	case "*":
+		n, err := strconv.Atoi(parts[2])
+		if err != nil {
+			panic("Неверный ввод числа")
+		}
+		if n < 1 || n > 10 {
+			panic("Число должно быть от 1 до 10")
+		}
+		result = strings.Repeat(s1, n)
+	case "/":
+		n, err := strconv.Atoi(parts[2])
+		if err != nil {
+			panic("Неверный ввод числа")
+		}
+		if len(s1)%n != 0 {
+			panic("Строку нельзя разделить на равные части")
+			return
+		}
+		result = s1[:len(s1)/n]
+
+	default:
+		panic("Неподдерживаемая операция")
+	}
+
+	if len(result) > 40 {
+		result = result[:40] + "..."
+	}
+
+	fmt.Println("Результат:", result)
+}
